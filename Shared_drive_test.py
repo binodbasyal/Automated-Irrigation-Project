@@ -15,8 +15,6 @@
 # Added sort of serial port placing FTDI at item 0 if it exists
 
 # Credentials
-thingspeak_channelID = "359964"
-thingspeak_api_key = "GTOEBKK8ZQHI1V1B"
 
 min_VWC_percent=20
 
@@ -36,6 +34,11 @@ import time # For delaying in seconds
 import urllib.parse # For encoding data to be url safe.
 import urllib.request  # send data to online server
 import requests # sends data to cloud. To install this module, in RPI, open a terminal window, then type sudo pip3 install requests
+import shutil
+
+src = '/home/pi/Desktop/python_codes_for_irrigation_project'
+dst = '/mnt/automaticirrigation'
+
 
 def SIGINT_handler(signal, frame):
     ser.close()
@@ -50,9 +53,6 @@ def TER12_VWC_percentage_Soilless(RAW):
 def TER12_VWC_percentage_Custom(RAW):
     return round(((-0.0018*RAW)+35.619)*100,1)
 
-thingspeak_request_url_format='https://api.thingspeak.com/update.json?api_key=%s%s' # This is the upload API to thingspeak.com
-thingspeak_max_value_per_chn=8  # Maximal values to upload as a single data point
-
 unit_id=platform.node() # Use computer name as unit_id. For a raspberry pi, change its name from raspberrypi to something else to avoid confusion
 adapter_sdi_12_address='z'
 no_data=False # This is the flag to break out of the inner loops and continue the next data point loop in case no data is received from a sensor such as the GPS.
@@ -63,8 +63,7 @@ print('Designed for Dr. Liu\'s family of SDI-12 USB adapters (standard,analog,GP
 print('\nCompatible with Windows, GNU/Linux, Mac OSX, and Raspberry PI')
 print('\nThis program requires Python 3.4, Pyserial 3.0, requests and urllib (data upload)')
 print('\nData is logged to YYYYMMDD.CVS in the Python code\'s folder')
-print('\nVisit https://thingspeak.com/channels/%s to inspect or retrive data' %(thingspeak_channelID))
-# print('\nIf multiple people are running this code, they are distinguished by unit_id, although all raspberry pis have the same "raspberrypi" unit_id.')
+
 print ('\nFor assistance with customization, telemetry etc., contact Dr. Liu.\n\thttps://liudr.wordpress.com/gadget/sdi-12-usb-adapter/')
 print('+-'*40)
 
@@ -170,7 +169,8 @@ for j in range(total_data_count):
             print("Too Dry, Irrigation Started! VWC values(percentage): Sensor(TEROS12):%s" %(VWC_percent_custom))
             irrigation_counts=1
             GPIO.output(relay_GPIO[an_address],GPIO.HIGH)
-            time.sleep(10)
+            time.slee
+            p(10)
             GPIO.output(relay_GPIO[an_address], GPIO.LOW)
         else:
             print('Do Not Need Irrigation. VWC values: Sensor(TEROS12): %s' %(VWC_percent_custom))
@@ -190,24 +190,8 @@ for j in range(total_data_count):
         data_file = open(data_file_name, 'a') # open yyyymmdd.csv for appending
         data_file.write(file_output_str)
         data_file.close()
-
-        # Format thingspeak request
-        i=0
-        while (i<min(len(thingspeak_values),thingspeak_max_value_per_chn)):
-            thingspeak_values_str=thingspeak_values_str+"&field%d=%f" %(i+1,thingspeak_values[i]) # format values for posting. Field starts with field1, not field0.
-            i=i+1
-        print('Posting to thingspeak: %s' %thingspeak_values_str)
-        print()
-        thingspeak_request_url_str=thingspeak_request_url_format %(thingspeak_api_key,thingspeak_values_str) # Format cURL command
-
-        # Post to thingspeak
-        try:
-            req = urllib.request.urlopen(thingspeak_request_url_str)
-        except: # Intermittent internet connection could cause more underlying modules to through exceptions. Just catch any exception and discard.
-            print("Unexpected error:", sys.exc_info()[0])
-        else:
-            print('Sent data to thingspeak')
-            print(req.status)  # Send data to server and print out response. 200 means OK.
+        shutil.move((src+'/'+data_file_name),(dst+'/'+data_file_name))
+        
 
         print('+-'*40)
     afterposting=datetime.datetime.now()
