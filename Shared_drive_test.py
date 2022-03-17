@@ -15,7 +15,7 @@
 # Added sort of serial port placing FTDI at item 0 if it exists
 
 # Credentials
-#test
+
 min_VWC_percent=20
 
 import RPi.GPIO as GPIO
