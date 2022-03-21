@@ -185,7 +185,7 @@ for j in range(total_data_count):
         for oneTER12Calcs in TER12Calcs:
             file_output_str=file_output_str+",%s,%s" %(oneTER12Calcs[0],oneTER12Calcs[1])
         file_output_str=file_output_str+'\n'
-        data_file_name="%04d%02d%02d.csv" %(now.year,now.month,now.day)
+        data_file_name="%04d%02d%02d.csv" %(now.year,now.month,now.day,now.hour)
         print('Saving to %s\n%s' %(data_file_name,file_output_str))
         data_file = open(data_file_name, 'a') # open yyyymmdd.csv for appending
         data_file.write(file_output_str)
