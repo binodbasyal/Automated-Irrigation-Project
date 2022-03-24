@@ -183,7 +183,7 @@ for j in range(total_data_count):
         # Format output file
         file_output_str="%04d/%02d/%02d %02d:%02d:%02d%s,%d" %(now.year,now.month,now.day,now.hour,now.minute,now.second,' GMT' if time_zone_choice==0 else '',tstamp) # formatting date and time
         for oneTER12Calcs in TER12Calcs:
-            file_output_str=file_output_str+",%s,%s,%s" %(oneTER12Calcs[0],oneTER12Calcs[1])
+            file_output_str=file_output_str+",%s,%s,%s" %(oneTER12Calcs[0],oneTER12Calcs[1],oneTER12Calcs[2])
         file_output_str=file_output_str+'\n'
         data_file_name="%04d.%02d.%02d.%02.csv" %(now.year,now.month,now.day,now.hour)
         print('Saving to %s\n%s' %(data_file_name,file_output_str))
